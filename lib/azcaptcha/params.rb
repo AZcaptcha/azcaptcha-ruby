@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "base64"
-
 module Azcaptcha
   # Proxy and image parameter normalisation.
   module Params
@@ -38,14 +36,14 @@ module Azcaptcha
     end
 
     def image_body(image)
-      return Base64.strict_encode64(image) if image.is_a?(String) && image.encoding == Encoding::BINARY
+      return [image].pack("m0") if image.is_a?(String) && image.encoding == Encoding::BINARY
 
       value = image.to_s.strip
       return value.split(",", 2)[1] if value.start_with?("data:") && value.include?(",")
-      return Base64.strict_encode64(File.binread(value)) if value.length < 4096 && File.file?(value)
+      return [File.binread(value)].pack("m0") if value.length < 4096 && File.file?(value)
       return value.gsub(/\s+/, "") if value.match?(/\A[A-Za-z0-9+\/=\s]+\z/)
 
-      Base64.strict_encode64(value)
+      [value].pack("m0")
     end
 
     def clean(params)

@@ -21,7 +21,7 @@ class ClientLegacyTest < Minitest::Test
     assert_equal "base64", call.payload["method"]
     assert_equal "test-key", call.payload["key"]
     assert_equal "1", call.payload["json"]
-    assert_equal Base64.strict_encode64("PNG".b), call.payload["body"]
+    assert_equal ["PNG".b].pack("m0"), call.payload["body"]
   end
 
   def test_submits_recaptcha_v2_fixture
